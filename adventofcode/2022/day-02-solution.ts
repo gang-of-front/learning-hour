@@ -17,6 +17,30 @@ enum RockPaperScissors {
 const mapPlayer1 = { A: RockPaperScissors.ROCK, B: RockPaperScissors.PAPER, C: RockPaperScissors.SCISSORS }
 const mapPlayer2 = { X: RockPaperScissors.ROCK, Y: RockPaperScissors.PAPER, Z: RockPaperScissors.SCISSORS }
 
+const whatWin = (value: RockPaperScissors) => {
+  if (value === RockPaperScissors.ROCK) {
+    return RockPaperScissors.PAPER
+  } else if (value === RockPaperScissors.PAPER) {
+    return RockPaperScissors.SCISSORS
+  } else {
+    return RockPaperScissors.ROCK
+  }
+}
+
+const whatLose = (value: RockPaperScissors) => {
+  if (value === RockPaperScissors.ROCK) {
+    return RockPaperScissors.SCISSORS
+  } else if (value === RockPaperScissors.PAPER) {
+    return RockPaperScissors.ROCK
+  } else {
+    return RockPaperScissors.PAPER
+  }
+}
+
+const whatDraw = (value: RockPaperScissors) => {
+  return value
+}
+
 const verify = (play1: RockPaperScissors, play2: RockPaperScissors) => {
   if (play2 === RockPaperScissors.ROCK) {
     if (play1 === RockPaperScissors.SCISSORS) {
@@ -56,7 +80,23 @@ rl.on('line', line => {
   total += result
 })
 
+
+let total2 = 0
+rl.on('line', line => {
+  const [play1, play2] = line.split(' ')
+  const decryptPlay1 = mapPlayer1[play1 as keyof typeof mapPlayer1]
+  const decryptPlay2 = mapPlayer2[play2 as keyof typeof mapPlayer2]
+
+  if (play2 === 'X') {
+    total2 += verify(decryptPlay1, whatLose(decryptPlay1))
+  } else if (play2 === 'Y') {
+    total2 += verify(decryptPlay1, whatDraw(decryptPlay1))
+  } else {
+    total2 += verify(decryptPlay1, whatWin(decryptPlay1))
+  }
+})
+
 rl.on('close', () => {
 
-  console.log({ answer: { total } })
+  console.log({ answer: { total, total2 } })
 });
