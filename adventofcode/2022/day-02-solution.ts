@@ -1,12 +1,6 @@
-import path from 'path'
-import fs from 'fs'
-import readline from 'readline'
+import { readInput } from "./read-input"
 
-const rl = readline.createInterface({
-  input: fs.createReadStream(path.resolve(__dirname, './day-02-input.txt')),
-  output: process.stdout,
-  terminal: false
-})
+const rl = readInput('./day-02-input.txt')
 
 enum RockPaperScissors {
   ROCK,
