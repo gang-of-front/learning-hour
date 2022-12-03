@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "day-01": "ts-node-dev --inspect -- ./2022/day-01-solution.ts",
+    "day-01": "ts-node-dev --respawn ./2022/day-01-solution.ts",
+    "day-02": "ts-node-dev --respawn ./2022/day-02-solution.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
