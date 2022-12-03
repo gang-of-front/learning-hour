@@ -1,2 +1,5 @@
 packages
   - 'adventofcode'
+  - 'apps/*'
+  - 'apis/*'
+  - 'libs/*'
