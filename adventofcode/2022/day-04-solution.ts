@@ -33,15 +33,41 @@ const isFullyContains = (pairs: string[]) => {
   return isFully;
 };
 
-let count = 0;
+let fullyCount = 0;
 rl.on("line", (line) => {
   const pairs = line.split(",");
 
   if (isFullyContains(pairs)) {
-    count++;
+    fullyCount++;
+  }
+});
+
+const isOverlap = (pairs: string[]) => {
+  const [pairOne, pairTwo] = pairs;
+
+  let sectionOne = pairOne.split("-").map(Number);
+  let sectionTwo = pairTwo.split("-").map(Number);
+
+  const firstRange = generateRangeArr(sectionOne);
+  const lastRange = generateRangeArr(sectionTwo);
+  const intersection = firstRange.filter((n) => lastRange.includes(n));
+
+  if (intersection.length === 0) {
+    return false;
+  }
+
+  return true;
+};
+
+let overlapCount = 0;
+rl.on("line", (line) => {
+  const pairs = line.split(",");
+
+  if (isOverlap(pairs)) {
+    overlapCount++;
   }
 });
 
 rl.on("close", () => {
-  console.log({ answer: { count } });
+  console.log({ answer: { fullyCount, overlapCount } });
 });
