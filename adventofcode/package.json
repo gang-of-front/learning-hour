@@ -9,6 +9,7 @@
     "day-03": "ts-node-dev --respawn ./2022/day-03-solution.ts",
     "day-04": "ts-node-dev --respawn ./2022/day-04-solution.ts",
     "day-05": "ts-node-dev --respawn ./2022/day-05-solution.ts",
+    "day-06": "ts-node-dev --respawn ./2022/day-06-solution.ts",
     "test": "vitest"
   },
   "keywords": [],
