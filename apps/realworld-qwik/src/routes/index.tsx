@@ -1,10 +1,10 @@
-import { component$, Resource, useSignal } from "@builder.io/qwik";
+import { component$, Resource, useStore } from "@builder.io/qwik";
 import {
   DocumentHead,
   RequestHandler,
   useEndpoint,
+  Link,
 } from "@builder.io/qwik-city";
-import { Link } from "@builder.io/qwik-city";
 import { getToken, isAuthenticated } from "~/auth/auth";
 import { articles, feed, tags } from "~/services";
 import { Article } from "~/types";
@@ -15,19 +15,19 @@ export const onGet: RequestHandler = async ({ request }) => {
   const [tagsData, articlesData, feedData] = await Promise.all([
     tags(),
     articles(token)(),
-    isAuthenticated() && feed(token)(),
+    isAuthenticated() ? feed(token)() : [],
   ]);
 
   return {
     ...tagsData,
-    ...articlesData,
+    articles: articlesData,
     feeds: feedData,
   };
 };
 
 export default component$(() => {
   const data = useEndpoint();
-  const showFeeds = useSignal(false);
+  const showFeeds = useStore({ value: false });
 
   return (
     <div class="home-page">
@@ -38,51 +38,32 @@ export default component$(() => {
         </div>
       </div>
 
-      {JSON.stringify({ log: showFeeds.value }, null, 2)}
-      <button
-        onClick$={() => {
-          console.log("aki", showFeeds);
-          showFeeds.value = false;
-        }}
-      >
-        False
-      </button>
-      <button
-        onClick$={() => {
-          console.log("aki", showFeeds);
-          showFeeds.value = true;
-        }}
-      >
-        True
-      </button>
       <div class="container page">
         <div class="row">
           <div class="col-md-9">
             <div class="feed-toggle">
               <ul class="nav nav-pills outline-active">
                 <li class="nav-item">
-                  <Link
+                  <a
                     class={`nav-link ${
-                      !state.showFeeds ? "disabled" : "active"
+                      !showFeeds.value ? "disabled" : "active"
                     }`}
-                    href="#"
+                    preventdefault:click
+                    onClick$={() => (showFeeds.value = true)}
                   >
                     Your Feed
-                  </Link>
+                  </a>
                 </li>
                 <li class="nav-item">
-                  <Link
+                  <a
                     class={`nav-link ${
-                      state.showFeeds ? "disabled" : "active"
+                      showFeeds.value ? "disabled" : "active"
                     }`}
-                    href="#"
-                    onClick$={() => {
-                      console.log("aki", state);
-                      state.showFeeds = false;
-                    }}
+                    preventdefault:click
+                    onClick$={() => (showFeeds.value = false)}
                   >
                     Global Feed
-                  </Link>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -94,32 +75,34 @@ export default component$(() => {
               onResolved={(data: any) =>
                 data && (
                   <>
-                    {data.articles.map((article: Article) => (
-                      <div class="article-preview">
-                        <div class="article-meta">
-                          <Link href="profile.html">
-                            <img src={article.author.image} />
-                          </Link>
-                          <div class="info">
-                            <Link href="" class="author">
-                              {article.author.username}
+                    {data[showFeeds.value ? "feeds" : "articles"].articles.map(
+                      (article: Article) => (
+                        <div class="article-preview" key={article.slug}>
+                          <div class="article-meta">
+                            <Link href="profile.html">
+                              <img src={article.author.image} />
                             </Link>
-                            <span class="date">{article.createdAt}</span>
+                            <div class="info">
+                              <Link href="" class="author">
+                                {article.author.username}
+                              </Link>
+                              <span class="date">{article.createdAt}</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm pull-xs-right">
+                              <i class="ion-heart"></i> {article.favoritesCount}
+                            </button>
                           </div>
-                          <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                            <i class="ion-heart"></i> {article.favoritesCount}
-                          </button>
+                          <Link
+                            href={`/article/${article.slug}`}
+                            class="preview-link"
+                          >
+                            <h1>{article.title}</h1>
+                            <p>{article.description}</p>
+                            <span>Read more...</span>
+                          </Link>
                         </div>
-                        <Link
-                          href={`/article/${article.slug}`}
-                          class="preview-link"
-                        >
-                          <h1>{article.title}</h1>
-                          <p>{article.description}</p>
-                          <span>Read more...</span>
-                        </Link>
-                      </div>
-                    ))}
+                      )
+                    )}
                   </>
                 )
               }
@@ -139,7 +122,11 @@ export default component$(() => {
                     data && (
                       <>
                         {data.tags.map((tagName: string) => (
-                          <Link href="" class="tag-pill tag-default">
+                          <Link
+                            href=""
+                            class="tag-pill tag-default"
+                            key={tagName}
+                          >
                             {tagName}
                           </Link>
                         ))}
