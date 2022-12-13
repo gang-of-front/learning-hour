@@ -1,4 +1,4 @@
-import { component$, Resource, useStore } from "@builder.io/qwik";
+import { component$, Resource, useSignal } from "@builder.io/qwik";
 import {
   DocumentHead,
   RequestHandler,
@@ -27,9 +27,7 @@ export const onGet: RequestHandler = async ({ request }) => {
 
 export default component$(() => {
   const data = useEndpoint();
-  const state = useStore({
-    showFeeds: false,
-  });
+  const showFeeds = useSignal(false);
 
   return (
     <div class="home-page">
@@ -40,7 +38,23 @@ export default component$(() => {
         </div>
       </div>
 
-      {JSON.stringify({ log: state.showFeeds }, null, 2)}
+      {JSON.stringify({ log: showFeeds.value }, null, 2)}
+      <button
+        onClick$={() => {
+          console.log("aki", showFeeds);
+          showFeeds.value = false;
+        }}
+      >
+        False
+      </button>
+      <button
+        onClick$={() => {
+          console.log("aki", showFeeds);
+          showFeeds.value = true;
+        }}
+      >
+        True
+      </button>
       <div class="container page">
         <div class="row">
           <div class="col-md-9">
@@ -52,10 +66,6 @@ export default component$(() => {
                       !state.showFeeds ? "disabled" : "active"
                     }`}
                     href="#"
-                    onClick$={() => {
-                      console.log("akii", state);
-                      state.showFeeds = true;
-                    }}
                   >
                     Your Feed
                   </Link>
