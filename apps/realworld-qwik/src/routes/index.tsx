@@ -1,4 +1,4 @@
-import { component$, Resource } from "@builder.io/qwik";
+import { component$, Resource, useStore } from "@builder.io/qwik";
 import {
   DocumentHead,
   RequestHandler,
@@ -27,6 +27,9 @@ export const onGet: RequestHandler = async ({ request }) => {
 
 export default component$(() => {
   const data = useEndpoint();
+  const state = useStore({
+    showFeeds: false,
+  });
 
   return (
     <div class="home-page">
@@ -37,18 +40,37 @@ export default component$(() => {
         </div>
       </div>
 
+      {JSON.stringify({ log: state.showFeeds }, null, 2)}
       <div class="container page">
         <div class="row">
           <div class="col-md-9">
             <div class="feed-toggle">
               <ul class="nav nav-pills outline-active">
                 <li class="nav-item">
-                  <Link class="nav-link disabled" href="">
+                  <Link
+                    class={`nav-link ${
+                      !state.showFeeds ? "disabled" : "active"
+                    }`}
+                    href="#"
+                    onClick$={() => {
+                      console.log("akii", state);
+                      state.showFeeds = true;
+                    }}
+                  >
                     Your Feed
                   </Link>
                 </li>
                 <li class="nav-item">
-                  <Link class="nav-link active" href="">
+                  <Link
+                    class={`nav-link ${
+                      state.showFeeds ? "disabled" : "active"
+                    }`}
+                    href="#"
+                    onClick$={() => {
+                      console.log("aki", state);
+                      state.showFeeds = false;
+                    }}
+                  >
                     Global Feed
                   </Link>
                 </li>
@@ -62,29 +84,32 @@ export default component$(() => {
               onResolved={(data: any) =>
                 data && (
                   <>
-                  {data.articles.map((article: Article)  => (
-                    <div class="article-preview">
-                    <div class="article-meta">
-                      <Link href="profile.html">
-                        <img src={article.author.image} />
-                      </Link>
-                      <div class="info">
-                        <Link href="" class="author">
-                          {article.author.username}
+                    {data.articles.map((article: Article) => (
+                      <div class="article-preview">
+                        <div class="article-meta">
+                          <Link href="profile.html">
+                            <img src={article.author.image} />
+                          </Link>
+                          <div class="info">
+                            <Link href="" class="author">
+                              {article.author.username}
+                            </Link>
+                            <span class="date">{article.createdAt}</span>
+                          </div>
+                          <button class="btn btn-outline-primary btn-sm pull-xs-right">
+                            <i class="ion-heart"></i> {article.favoritesCount}
+                          </button>
+                        </div>
+                        <Link
+                          href={`/article/${article.slug}`}
+                          class="preview-link"
+                        >
+                          <h1>{article.title}</h1>
+                          <p>{article.description}</p>
+                          <span>Read more...</span>
                         </Link>
-                        <span class="date">{article.createdAt}</span>
                       </div>
-                      <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                        <i class="ion-heart"></i> {article.favoritesCount}
-                      </button>
-                    </div>
-                    <Link href={`/article/${article.slug}`} class="preview-link">
-                      <h1>{article.title}</h1>
-                      <p>{article.description}</p>
-                      <span>Read more...</span>
-                    </Link>
-                  </div>
-                  ))}
+                    ))}
                   </>
                 )
               }
