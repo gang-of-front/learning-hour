@@ -8,4 +8,5 @@ export type MultipleArticles = {
 export type ArticlesFilters = {
   limit?: number;
   offset?: number;
+  tag?: string;
 };
