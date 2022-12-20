@@ -1,4 +1,10 @@
-import { component$, Resource, useStore } from "@builder.io/qwik";
+import {
+  component$,
+  Resource,
+  useStore,
+  useContextProvider,
+  createContext,
+} from "@builder.io/qwik";
 import {
   DocumentHead,
   RequestHandler,
@@ -8,7 +14,18 @@ import {
 } from "@builder.io/qwik-city";
 import { getToken, isAuthenticated } from "~/auth/auth";
 import { articles, feed, tags } from "~/services";
-import { Article } from "~/types";
+import { Article as ArticleType } from "~/types";
+import Article from "./home/article";
+import FeedToggle from "./home/feedToggle";
+import Hero from "./home/hero";
+
+type ArticleContextProps = {
+  currentTab: String;
+  tag: String;
+};
+
+export const ArticleContext =
+  createContext<ArticleContextProps>("article-context");
 
 export const onGet: RequestHandler = async ({ request }) => {
   const token = getToken(request.headers.get("cookie"));
@@ -38,60 +55,16 @@ export default component$(() => {
     currentTab: tag === "" ? "global" : "tag",
     tag: params.get("tag") || "",
   });
+  useContextProvider(ArticleContext, store);
 
   return (
     <div class="home-page">
-      <div class="banner">
-        <div class="container">
-          <h1 class="logo-font">conduit</h1>
-          <p>A place to share your knowledge.</p>
-        </div>
-      </div>
+      <Hero />
 
       <div class="container page">
         <div class="row">
           <div class="col-md-9">
-            <div class="feed-toggle">
-              <ul class="nav nav-pills outline-active">
-                {isAuthenticated() && (
-                  <li class="nav-item">
-                    <a
-                      class={`nav-link ${
-                        store.currentTab === "feeds" ? "active" : "disabled"
-                      }`}
-                      preventdefault:click
-                      onClick$={() => (store.currentTab = "feeds")}
-                    >
-                      Your Feed
-                    </a>
-                  </li>
-                )}
-                <li class="nav-item">
-                  <a
-                    class={`nav-link ${
-                      store.currentTab === "global" ? "active" : "disabled"
-                    }`}
-                    preventdefault:click
-                    onClick$={() => (store.currentTab = "global")}
-                  >
-                    Global Feed
-                  </a>
-                </li>
-                {store.currentTab === "tag" && (
-                  <li class="nav-item">
-                    <a
-                      class={`nav-link ${
-                        store.currentTab === "tag" ? "active" : "disabled"
-                      }`}
-                      preventdefault:click
-                      onClick$={() => (store.currentTab = "tag")}
-                    >
-                      {`#${store.tag}`}
-                    </a>
-                  </li>
-                )}
-              </ul>
-            </div>
+            <FeedToggle />
 
             <Resource
               value={data}
@@ -100,32 +73,11 @@ export default component$(() => {
               onResolved={(data: any) =>
                 data && (
                   <>
-                    {data[store.currentTab].articles.map((article: Article) => (
-                      <div class="article-preview" key={article.slug}>
-                        <div class="article-meta">
-                          <Link href="profile.html">
-                            <img src={article.author.image} />
-                          </Link>
-                          <div class="info">
-                            <Link href="" class="author">
-                              {article.author.username}
-                            </Link>
-                            <span class="date">{article.createdAt}</span>
-                          </div>
-                          <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                            <i class="ion-heart"></i> {article.favoritesCount}
-                          </button>
-                        </div>
-                        <Link
-                          href={`/article/${article.slug}`}
-                          class="preview-link"
-                        >
-                          <h1>{article.title}</h1>
-                          <p>{article.description}</p>
-                          <span>Read more...</span>
-                        </Link>
-                      </div>
-                    ))}
+                    {data[store.currentTab].articles.map(
+                      (article: ArticleType) => (
+                        <Article article={article} key={article.slug} />
+                      )
+                    )}
                   </>
                 )
               }

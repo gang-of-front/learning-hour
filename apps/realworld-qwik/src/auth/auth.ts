@@ -31,7 +31,7 @@ export const getToken = (cookie: string | null): string | null => {
 
 export const createToken = (token: string) => {
   return `${AUTH_TOKEN_NAME}=${token}; Secure; HttpOnly; Max-Age=${
-    60 * 5
+    60 * 60 * 24
   }; Path=/`;
 };
 
