@@ -12,6 +12,7 @@
     "day-06": "ts-node-dev --respawn ./2022/day-06-solution.ts",
     "day-07": "ts-node-dev --respawn ./2022/day-07-solution.ts",
     "day-10": "ts-node-dev --respawn ./2022/day-10-solution.ts",
+    "day-11": "ts-node-dev --respawn ./2022/day-11-solution.ts",
     "test": "vitest"
   },
   "keywords": [],
