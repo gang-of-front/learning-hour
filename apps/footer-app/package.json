@@ -1,7 +1,7 @@
 {
   "name": "@gang-of-front/footer-app",
   "scripts": {
-    "start": "webpack serve",
+    "start": "webpack serve --port 8002",
     "dev": "webpack serve --env standalone",
     "build": "concurrently pnpm:build:*",
     "build:webpack": "webpack --mode=production",
