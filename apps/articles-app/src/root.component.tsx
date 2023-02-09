@@ -1,3 +1,9 @@
-export default function Root(props) {
-  return <section>{props.name} is mounted!</section>;
+import { HomePage } from "./pages/home";
+
+export default function Root() {
+  return (
+    <div>
+      <HomePage />
+    </div>
+  );
 }
