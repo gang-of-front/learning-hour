@@ -1,4 +1,4 @@
-const HomePage = () => {
+const AuthPage = () => {
   return (
     <div className="auth-page">
       <div className="container page">
@@ -46,4 +46,4 @@ const HomePage = () => {
   );
 };
 
-export { HomePage };
+export { AuthPage };
